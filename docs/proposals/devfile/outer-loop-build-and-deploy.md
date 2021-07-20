@@ -47,7 +47,7 @@ __Alternative approach:__ we can consider reusing the `exec` type except that th
           dockerfile:
             buildContext: ${PROJECTS_ROOT}/build
             location: Dockerfile
-            args: [ "arg1", "arg2", "arg3" ]
+            args: [ "--no-cache", "--build-arg", "arg1=abc", "--label", "version=1.0" ]
             rootRequired: false
 ```
 
@@ -62,7 +62,12 @@ __Alternative approach:__ we can consider reusing the `exec` type except that th
 `rootRequired`: Specifies whether a privileged builder pod is required.  Default is false. (optional)
 
 __Note:__
-1. A common pattern will be using a global variable to define the image name (`myimage` in the example above) so that it can be easily referred to in the deploy step later.
+1. The build tool/mechanism, e.g. buildah/kaniko, used for building the dockerfile is up to the specific devfile tool, which will define a build using a custom, straightforward mapping from the devfile image component definition to a build command for the specific build tool.  E.g. for `docker build` the above example might map to a command like:
+`docker build -t {{myimage}} --no-cache --build-arg arg1=abc --label version=1.0 ${PROJECTS_ROOT}/build -f Dockerfile`    
+(with substitutions applied).
+2. A common pattern will be using a global variable to define the image name (`myimage` in the example above) so that it can be easily referred to in the deploy step later.
+
+
 
 ### Example using a Dockerfile with registry and secret for the image push:
 ```yaml
